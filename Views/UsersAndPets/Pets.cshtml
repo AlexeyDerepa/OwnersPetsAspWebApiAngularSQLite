@@ -1,0 +1,155 @@
+﻿@model  OwnersPets.Models.SimpsonPets
+@{
+    ViewBag.Title = "Pets";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div ng-app="plunker">
+    <div ng-controller="MainCtrl">
+
+        <div style="margin-left:auto; margin-right:auto; text-align:center"><h1>Simpsons' pets</h1></div>
+        <div style="margin-left:auto; margin-right:auto; text-align:center"><h1>@Model.NameSimpsons</h1></div>
+        @Html.ActionLink("Back to all Users", "Owners", "UsersAndPets")
+        <form name="answerForm">
+            <fieldset>
+                <div class="form-inline">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <input class="form-control" ng-model="Pet" placeholder="Enter Pet's Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-8">
+                            <button class="btn btn-default" ng-click="addItem(Pet, answerForm)">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+            </fieldset>
+        </form>
+
+        <hr />
+        <div>Total count: {{totalItems}}</div>
+        <table id="mytable" class="table table-striped">
+            <thead>
+                <tr class="table-head">
+                    <th>Name {{nameOwner}}</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in aCandidates">
+                    <th>
+                        <div>
+                            {{nameOwner=item.NameSimpsons;item.NamePet}}
+                            <button class="btn btn-default" ng-click="deleteItem(item.IdPet)" style="float:right;">Delete</button>
+                        </div>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+
+        <uib-pagination total-items="totalItems" ng-model="currentPage" items-per-page="itemsPerPage"></uib-pagination>
+
+
+    </div>
+</div>
+
+
+
+@*<script src="~/Scripts/Controllers/PetsController.js"></script>*@
+
+<script>
+
+
+
+
+    var app = angular.module("plunker", ["ui.bootstrap"]);
+
+    app.controller("MainCtrl", function ($scope, $http) {
+
+        $http({
+            method: "GET",
+            url: "/api/animals/" + @Model.IdOwner
+        }).then(function mySucces(response) {
+            $scope.allCandidates = response.data;
+
+            $scope.totalItems = $scope.allCandidates.length;
+
+            $scope.currentPage = 1;
+            $scope.itemsPerPage = 3;
+
+        }, function myError(response) {
+            alert(response.statusText);
+        });
+
+
+        $scope.deleteItem = function (IdPet) {
+
+            //http://techfunda.com/howto/576/http-delete-server-request
+            var data = $.param({
+                'IdPet': IdPet,
+                'IdOwner': @Model.IdOwner,
+            });
+
+            $http.delete('/api/animals?' + data)
+
+                .then(function mySucces(response) {
+
+                $scope.allCandidates = response.data;
+
+                $scope.totalItems = $scope.allCandidates.length;
+
+                $scope.show();
+
+            }, function myError(response) {
+                alert(response.statusText);
+            });
+
+
+        }
+
+
+
+        $scope.addItem = function (Pet, answerForm) {
+
+            if (answerForm.$valid) {
+
+                $http.post("/api/animals/", { 'IdPet': 0, 'NamePet': Pet, 'IdOwner': @Model.IdOwner, 'NameSimpsons': '' })
+                    .then(function mySucces(response) {
+
+                        $scope.allCandidates = response.data;
+                        $scope.totalItems = $scope.allCandidates.length;
+
+                        $scope.show();
+                    }, function myError(response) {
+                        alert(response.statusText);
+                    });
+            }
+        }
+
+        $scope.show = function(){
+            $scope.$watch("currentPage", function () {
+                setPagingData($scope.currentPage);
+            });
+        }
+
+
+        $scope.show();
+
+        function setPagingData(page) {
+            $scope.aCandidates = $scope.allCandidates.slice(
+                (page - 1) * $scope.itemsPerPage,
+                page * $scope.itemsPerPage
+            );
+        }
+    });
+
+
+
+
+
+</script>
+
+

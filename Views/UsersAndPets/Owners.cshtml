@@ -1,0 +1,64 @@
+﻿
+@{
+    ViewBag.Title = "Owners";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div ng-app="plunker">
+    <div ng-controller="MainCtrl">
+
+
+        <div style="margin-left:auto; margin-right:auto; text-align:center"><h1>All Users</h1></div>
+
+        <form name="answerForm">
+            <fieldset>
+                <div class="form-inline">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <input class="form-control" ng-model="Owner" placeholder="Enter Pet Owner's Name" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-8">
+                            <button class="btn btn-default" ng-click="addItem(Owner, answerForm)">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+            </fieldset>
+        </form>
+
+        <hr />
+        <div>Total count: {{totalItems}}</div>
+        <table id="mytable" class="table table-striped">
+            <thead>
+                <tr class="table-head">
+                    <th>Name</th>
+                    <th>Pets Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in aCandidates">
+                    <th>
+                        <div>
+                        <a href="Pets/{{item.IdOwner}}?name={{item.NameSimpsons}}">{{item.NameSimpsons}}</a></div>
+                    </th>
+                    <th>
+                        <div>
+                            {{item.IdPet}}
+                            <button class="btn btn-default" ng-click="deleteItem(item.IdOwner)" style="float:right;">Delete</button>
+                        </div>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+
+        <uib-pagination total-items="totalItems" ng-model="currentPage" items-per-page="itemsPerPage"></uib-pagination>
+
+
+    </div>
+</div>
+
+
+
+<script src="~/Scripts/Controllers/OwnersController.js"></script>
